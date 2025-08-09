@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+    
+<style>
+
+		* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+        	margin:0;
+        	padding:0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }si
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 50px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .profile-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-info p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .repositories {
+            padding: 30px;
+        }
+
+        .repo-header {
+            margin-bottom: 30px;
+        }
+
+        .repo-header h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .repo-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .repo-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .repo-name {
+            color: #667eea;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-decoration: none;
+        }
+
+        .repo-name:hover {
+            text-decoration: underline;
+        }
+
+        .repo-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .repo-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .language {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .language-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .repo-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .repo-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .no-repos {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .repo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: bold;
+        }
+        .sidebar {
+            background-color: #4e73df;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        .sidebar .fas {
+            margin-right: 10px;
+        }
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #6c757d;
+        }
+        .stats-card {
+            border-left: 4px solid;
+        }
+        .stats-card.primary {
+            border-left-color: #4e73df;
+        }
+        .stats-card.success {
+            border-left-color: #1cc88a;
+        }
+        .stats-card.info {
+            border-left-color: #36b9cc;
+        }
+        .stats-card.warning {
+            border-left-color: #f6c23e;
+        }
+        
+         .no-left-space {
+		    padding-left: 0 !important;
+		    margin-left: 0 !important;
+		    margin-top:0 !important;
+		  }
+		        
+    </style>
+
+
+</head>
+<body  style="margin-top: -10px;">
+
+<div class="container-fluid  no-left-space" >
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar px-0 ml-0" style=" margin-top:-10px !important;">
+                <div class="text-center py-4 mt-0">
+                    <h4 class="text-white">College ERP</h4>
+                </div>
+                <hr class="sidebar-divider my-0 bg-light">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard">
+                            <i class="fas fa-fw fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="students" id="studentsLink">
+                            <i class="fas fa-fw fa-users"></i>
+                            Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="attendance">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marks">
+                            <i class="fas fa-fw fa-chart-bar"></i>
+                            Marks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="github">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            Github
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profiletracker">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            ProfileTracker
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/studentmanagement">
+                            <i class="fas fa-fw fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        
+
+
+    
+    
+
+
+    <div class="container py-4">
+        <div class="header ">
+             
+            <h1>GitHub Profile Tracker</h1>
+            <p>Track GitHub profiles and explore their repositories</p>
+        </div>
+
+        <div class="search-section">
+            <form class="search-form" id="searchForm">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="usernameInput" 
+                    placeholder="Enter GitHub username (e.g., octocat)"
+                    required
+                >
+                <button type="submit" class="search-btn" id="searchBtn">
+                    Search Profile
+                </button>
+            </form>
+        </div>
+
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Fetching profile data...</p>
+        </div>
+
+        <div id="errorSection" style="display: none;"></div>
+
+        <div id="profileSection" style="display: none;"></div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+        const languageColors = {
+    'JavaScript': '#f1e05a',
+    'Python': '#3572A5',
+    'Java': '#b07219',
+    'TypeScript': '#2b7489',
+    'C++': '#f34b7d',
+    'C': '#555555',
+    'C#': '#239120',
+    'PHP': '#4F5D95',
+    'Ruby': '#701516',
+    'Go': '#00ADD8',
+    'Rust': '#dea584',
+    'Swift': '#ffac45',
+    'Kotlin': '#F18E33',
+    'HTML': '#e34c26',
+    'CSS': '#1572B6',
+    'Shell': '#89e051',
+    'R': '#198CE7',
+    'Scala': '#c22d40',
+    'Dart': '#00B4AB',
+    'Lua': '#000080',
+    'Vue': '#4FC08D',
+    'Dockerfile': '#384d54'
+};
+
+// Add delay function to prevent rate limiting
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Enhanced GitHub API fetch with retry logic
+async function fetchWithRetry(url, maxRetries = 3, delayMs = 1000) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(url);
+            
+            if (response.status === 403) {
+                console.warn(`Rate limit hit, waiting ${delayMs * (i + 1)}ms...`);
+                await delay(delayMs * (i + 1));
+                continue;
+            }
+            
+            if (response.status === 404) {
+                throw new Error('Resource not found');
+            }
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return response;
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            console.warn(`Attempt ${i + 1} failed, retrying...`);
+            await delay(delayMs * (i + 1));
+        }
+    }
+}
+
+// Enhanced AI-based description generator with rate limiting
+async function generateEnhancedDescription(repoName, originalDescription, languages, repoData, onProgress) {
+    try {
+        onProgress && onProgress(`🔍 Starting analysis for ${repoName}...`);
+        
+        // Add delay to prevent rate limiting
+        await delay(800);
+        
+        // Perform analysis steps with progress updates
+        onProgress && onProgress(`📁 Analyzing project structure...`);
+        const projectStructure = await analyzeProjectStructure(repoData);
+        await delay(500);
+        
+        onProgress && onProgress(`💻 Performing deep code analysis...`);
+        const codeAnalysis = await performDeepCodeAnalysis(repoData);
+        await delay(500);
+        
+        onProgress && onProgress(`🔧 Detecting frameworks and features...`);
+        const frameworkAnalysis = await analyzeFrameworks(repoData, codeAnalysis);
+        const featureAnalysis = await analyzeAdvancedFeatures(repoData, codeAnalysis);
+        await delay(300);
+        
+        onProgress && onProgress(`📝 Generating AI description...`);
+        const aiDescription = await generateComprehensiveDescription(
+            repoName,
+            originalDescription,
+            languages,
+            {
+                structure: projectStructure,
+                code: codeAnalysis,
+                frameworks: frameworkAnalysis,
+                features: featureAnalysis
+            }
+        );
+        
+        return aiDescription;
+    } catch (error) {
+        console.error(`Error analyzing ${repoName}:`, error);
+        return generateFallbackDescription(repoName, originalDescription, languages);
+    }
+}
+
+// Deep project structure analysis with rate limiting
+async function analyzeProjectStructure(repoData) {
+    try {
+        const contentsResponse = await fetchWithRetry(`https://api.github.com/repos/${repoData.full_name}/contents`);
+        if (!contentsResponse.ok) return { files: [], structure: 'unknown' };
+        
+        const contents = await contentsResponse.json();
+        const structure = {
+            files: contents.map(item => ({ name: item.name, type: item.type, path: item.path })),
+            directories: contents.filter(item => item.type === 'dir').map(item => item.name)
+        };
+
+        // Analyze directory structure patterns
+        const analysis = {
+            // Core structure
+            hasSrcDir: structure.directories.includes('src'),
+            hasLibDir: structure.directories.includes('lib'),
+            hasPublicDir: structure.directories.includes('public'),
+            hasComponentsDir: structure.directories.includes('components'),
+            hasServicesDir: structure.directories.includes('services'),
+            hasUtilsDir: structure.directories.includes('utils'),
+            hasConfigDir: structure.directories.includes('config'),
+            hasTestDir: structure.directories.some(dir => ['test', 'tests', '__tests__', 'spec'].includes(dir)),
+            hasDocsDir: structure.directories.includes('docs'),
+            
+            // Configuration files
+            hasPackageJson: structure.files.some(f => f.name === 'package.json'),
+            hasTsConfig: structure.files.some(f => f.name === 'tsconfig.json'),
+            hasWebpackConfig: structure.files.some(f => f.name.includes('webpack')),
+            hasViteConfig: structure.files.some(f => f.name.includes('vite.config')),
+            hasNextConfig: structure.files.some(f => f.name.includes('next.config')),
+            
+            // Python specific
+            hasRequirementsTxt: structure.files.some(f => f.name === 'requirements.txt'),
+            hasPyprojectToml: structure.files.some(f => f.name === 'pyproject.toml'),
+            hasSetupPy: structure.files.some(f => f.name === 'setup.py'),
+            hasManagePy: structure.files.some(f => f.name === 'manage.py'),
+            
+            // Java specific
+            hasPomXml: structure.files.some(f => f.name === 'pom.xml'),
+            hasBuildGradle: structure.files.some(f => f.name.includes('build.gradle')),
+            
+            // DevOps and deployment
+            hasDockerfile: structure.files.some(f => f.name === 'Dockerfile'),
+            hasDockerCompose: structure.files.some(f => f.name.includes('docker-compose')),
+            hasGithubActions: structure.directories.includes('.github'),
+            hasEnvFiles: structure.files.some(f => f.name.includes('.env')),
+            hasIndexHtml: structure.files.some(f => f.name === 'index.html'),
+            
+            rawStructure: structure
+        };
+
+        return analysis;
+    } catch (error) {
+        console.error('Structure analysis error:', error);
+        return { files: [], structure: 'unknown' };
+    }
+}
+
+// Deep code analysis with improved file fetching
+async function performDeepCodeAnalysis(repoData) {
+    const analysis = {
+        functions: [],
+        classes: [],
+        imports: [],
+        apiEndpoints: [],
+        components: [],
+        patterns: []
+    };
+
+    try {
+        const keyFiles = await getKeySourceFiles(repoData);
+        
+        for (const file of keyFiles.slice(0, 5)) { // Limit to 5 files to prevent rate limits
+            try {
+                const fileContent = await fetchFileContent(repoData, file.path);
+                if (fileContent) {
+                    const fileAnalysis = analyzeSourceCode(fileContent, file.name);
+                    mergeAnalysis(analysis, fileAnalysis);
+                }
+                await delay(400); // Delay between file fetches
+            } catch (error) {
+                console.warn(`Failed to analyze ${file.name}:`, error);
+                continue;
+            }
+        }
+        
+        return analysis;
+    } catch (error) {
+        console.error('Code analysis error:', error);
+        return analysis;
+    }
+}
+
+// Get key source files for analysis
+async function getKeySourceFiles(repoData) {
+    const keyFiles = [];
+    
+    try {
+        const importantFiles = [
+            'package.json', 'requirements.txt', 'pom.xml',
+            'main.py', 'app.py', 'server.js', 'index.js',
+            'App.js', 'App.tsx', 'main.ts'
+        ];
+
+        const contentsResponse = await fetchWithRetry(`https://api.github.com/repos/${repoData.full_name}/contents`);
+        if (contentsResponse.ok) {
+            const contents = await contentsResponse.json();
+            
+            contents.forEach(item => {
+                if (item.type === 'file' && (importantFiles.includes(item.name) || isSourceFile(item.name))) {
+                    keyFiles.push({ name: item.name, path: item.path });
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching key files:', error);
+    }
+    
+    return keyFiles.slice(0, 8); // Limit files to analyze
+}
+
+function isSourceFile(filename) {
+    const sourceExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.java'];
+    return sourceExtensions.some(ext => filename.endsWith(ext));
+}
+
+// Fetch file content with retry logic
+async function fetchFileContent(repoData, filePath) {
+    try {
+        const response = await fetchWithRetry(`https://api.github.com/repos/${repoData.full_name}/contents/${filePath}`);
+        if (response.ok) {
+            const data = await response.json();
+            return atob(data.content);
+        }
+    } catch (error) {
+        console.error(`Error fetching ${filePath}:`, error);
+    }
+    return null;
+}
+
+// Analyze source code content
+function analyzeSourceCode(content, filename) {
+    const analysis = {
+        functions: [],
+        classes: [],
+        imports: [],
+        apiEndpoints: [],
+        components: [],
+        patterns: []
+    };
+
+    if (!content) return analysis;
+
+    if (filename.endsWith('.js') || filename.endsWith('.jsx') || filename.endsWith('.ts') || filename.endsWith('.tsx')) {
+        analyzeJavaScriptCode(content, analysis);
+    } else if (filename.endsWith('.py')) {
+        analyzePythonCode(content, analysis);
+    } else if (filename.endsWith('.java')) {
+        analyzeJavaCode(content, analysis);
+    } else if (filename === 'package.json') {
+        analyzePackageJson(content, analysis);
+    } else if (filename === 'requirements.txt') {
+        analyzeRequirements(content, analysis);
+    }
+
+    return analysis;
+}
+
+// JavaScript/TypeScript code analysis
+function analyzeJavaScriptCode(content, analysis) {
+    // Find functions
+    const functionRegex = /(?:function\s+(\w+)|const\s+(\w+)\s*=\s*(?:async\s+)?\(|(\w+)\s*:\s*(?:async\s+)?function)/g;
+    let match;
+    while ((match = functionRegex.exec(content)) !== null) {
+        const funcName = match[1] || match[2] || match[3];
+        if (funcName && !analysis.functions.includes(funcName)) {
+            analysis.functions.push(funcName);
+        }
+    }
+
+    // Find React components
+    const componentRegex = /(?:function\s+([A-Z]\w+)|const\s+([A-Z]\w+)\s*=\s*\(|class\s+([A-Z]\w+)\s+extends)/g;
+    while ((match = componentRegex.exec(content)) !== null) {
+        const componentName = match[1] || match[2] || match[3];
+        if (componentName && !analysis.components.includes(componentName)) {
+            analysis.components.push(componentName);
+        }
+    }
+
+    // Find API endpoints
+    const apiRegex = /(?:app\.|router\.|express\.)(?:get|post|put|delete|patch)\s*\(\s*['"`]([^'"`]+)['"`]/g;
+    while ((match = apiRegex.exec(content)) !== null) {
+        analysis.apiEndpoints.push(match[1]);
+    }
+
+    // Find imports
+    const importRegex = /import\s+.*?from\s+['"`]([^'"`]+)['"`]/g;
+    while ((match = importRegex.exec(content)) !== null) {
+        analysis.imports.push(match[1]);
+    }
+
+    // Detect patterns
+    if (content.includes('useState') || content.includes('useEffect')) {
+        analysis.patterns.push('React Hooks');
+    }
+    if (content.includes('Redux') || content.includes('useSelector')) {
+        analysis.patterns.push('Redux State Management');
+    }
+    if (content.includes('GraphQL') || content.includes('gql`')) {
+        analysis.patterns.push('GraphQL');
+    }
+}
+
+// Python code analysis
+function analyzePythonCode(content, analysis) {
+    const functionRegex = /def\s+(\w+)\s*\(/g;
+    let match;
+    while ((match = functionRegex.exec(content)) !== null) {
+        analysis.functions.push(match[1]);
+    }
+
+    const classRegex = /class\s+(\w+)(?:\([^)]*\))?:/g;
+    while ((match = classRegex.exec(content)) !== null) {
+        analysis.classes.push(match[1]);
+    }
+
+    const importRegex = /(?:from\s+(\S+)\s+import|import\s+(\S+))/g;
+    while ((match = importRegex.exec(content)) !== null) {
+        analysis.imports.push(match[1] || match[2]);
+    }
+
+    // Django/Flask routes
+    const djangoUrlRegex = /path\s*\(\s*['"`]([^'"`]+)['"`]/g;
+    const flaskRouteRegex = /@app\.route\s*\(\s*['"`]([^'"`]+)['"`]/g;
+    
+    while ((match = djangoUrlRegex.exec(content)) !== null) {
+        analysis.apiEndpoints.push(match[1]);
+    }
+    while ((match = flaskRouteRegex.exec(content)) !== null) {
+        analysis.apiEndpoints.push(match[1]);
+    }
+
+    if (content.includes('Django') || content.includes('django')) {
+        analysis.patterns.push('Django Framework');
+    }
+    if (content.includes('Flask') || content.includes('flask')) {
+        analysis.patterns.push('Flask Framework');
+    }
+}
+
+// Java code analysis
+function analyzeJavaCode(content, analysis) {
+    const classRegex = /(?:public\s+)?class\s+(\w+)/g;
+    let match;
+    while ((match = classRegex.exec(content)) !== null) {
+        analysis.classes.push(match[1]);
+    }
+
+    const methodRegex = /(?:public|private|protected)\s+(?:static\s+)?\w+\s+(\w+)\s*\(/g;
+    while ((match = methodRegex.exec(content)) !== null) {
+        analysis.functions.push(match[1]);
+    }
+
+    const springEndpointRegex = /@(?:GetMapping|PostMapping|PutMapping|DeleteMapping)\s*\(\s*['"`]([^'"`]+)['"`]/g;
+    while ((match = springEndpointRegex.exec(content)) !== null) {
+        analysis.apiEndpoints.push(match[1]);
+    }
+}
+
+// Analyze package.json
+function analyzePackageJson(content, analysis) {
+    try {
+        const packageData = JSON.parse(content);
+        analysis.imports = Object.keys({ ...packageData.dependencies, ...packageData.devDependencies });
+    } catch (error) {
+        console.error('Error parsing package.json:', error);
+    }
+}
+
+// Analyze requirements.txt
+function analyzeRequirements(content, analysis) {
+    const lines = content.split('\n');
+    lines.forEach(line => {
+        const lib = line.split('==')[0].split('>=')[0].split('<=')[0].trim();
+        if (lib && !lib.startsWith('#')) {
+            analysis.imports.push(lib);
+        }
+    });
+}
+
+// Merge analysis results
+function mergeAnalysis(target, source) {
+    target.functions = [...new Set([...target.functions, ...source.functions])];
+    target.classes = [...new Set([...target.classes, ...source.classes])];
+    target.imports = [...new Set([...target.imports, ...source.imports])];
+    target.apiEndpoints = [...new Set([...target.apiEndpoints, ...source.apiEndpoints])];
+    target.components = [...new Set([...target.components, ...source.components])];
+    target.patterns = [...new Set([...target.patterns, ...source.patterns])];
+}
+
+// Framework recognition
+async function analyzeFrameworks(repoData, codeAnalysis) {
+    const frameworks = [];
+    const imports = codeAnalysis.imports.map(imp => imp.toLowerCase());
+
+    // Frontend Frameworks
+    if (imports.some(imp => imp.includes('react'))) frameworks.push('React');
+    if (imports.some(imp => imp.includes('vue'))) frameworks.push('Vue.js');
+    if (imports.some(imp => imp.includes('angular'))) frameworks.push('Angular');
+    if (imports.some(imp => imp.includes('next'))) frameworks.push('Next.js');
+    if (imports.some(imp => imp.includes('nuxt'))) frameworks.push('Nuxt.js');
+
+    // Backend Frameworks
+    if (imports.some(imp => imp.includes('express'))) frameworks.push('Express.js');
+    if (imports.some(imp => imp.includes('fastapi'))) frameworks.push('FastAPI');
+    if (imports.some(imp => imp.includes('django'))) frameworks.push('Django');
+    if (imports.some(imp => imp.includes('flask'))) frameworks.push('Flask');
+    if (imports.some(imp => imp.includes('spring'))) frameworks.push('Spring Boot');
+
+    // Mobile Frameworks
+    if (imports.some(imp => imp.includes('react-native'))) frameworks.push('React Native');
+    if (imports.some(imp => imp.includes('flutter'))) frameworks.push('Flutter');
+
+    return [...new Set(frameworks)];
+}
+
+// Advanced feature detection
+async function analyzeAdvancedFeatures(repoData, codeAnalysis) {
+    const features = [];
+
+    // Authentication features
+    if (codeAnalysis.imports.some(imp => 
+        ['auth', 'passport', 'jwt', 'oauth'].some(auth => imp.toLowerCase().includes(auth))
+    )) {
+        features.push('Authentication System');
+    }
+
+    // Database features
+    if (codeAnalysis.imports.some(imp => 
+        ['mongoose', 'sequelize', 'prisma', 'sqlalchemy'].some(db => imp.toLowerCase().includes(db))
+    )) {
+        features.push('Database Integration');
+    }
+
+    // Real-time features
+    if (codeAnalysis.imports.some(imp => 
+        ['socket.io', 'websocket', 'ws'].some(rt => imp.toLowerCase().includes(rt))
+    )) {
+        features.push('Real-time Communication');
+    }
+
+    // API features
+    if (codeAnalysis.apiEndpoints.length > 0) {
+        features.push('RESTful API');
+    }
+
+    // Testing features
+    if (codeAnalysis.imports.some(imp => 
+        ['jest', 'pytest', 'mocha', 'testing-library'].some(test => imp.toLowerCase().includes(test))
+    )) {
+        features.push('Automated Testing');
+    }
+
+    // State Management
+    if (codeAnalysis.imports.some(imp => 
+        ['redux', 'vuex', 'mobx', 'zustand'].some(state => imp.toLowerCase().includes(state))
+    )) {
+        features.push('State Management');
+    }
+
+    // Machine Learning
+    if (codeAnalysis.imports.some(imp => 
+        ['tensorflow', 'pytorch', 'scikit-learn', 'pandas'].some(ml => imp.toLowerCase().includes(ml))
+    )) {
+        features.push('Machine Learning');
+    }
+
+    return [...new Set(features)];
+}
+
+// Generate comprehensive AI description
+async function generateComprehensiveDescription(repoName, originalDescription, languages, analysisData) {
+    const { structure, code, frameworks, features } = analysisData;
+    
+    let description = '';
+    
+    // Main project description
+    if (originalDescription && !isGenericDescription(originalDescription)) {
+        description += `${originalDescription}\n\n`;
+    } else {
+        const projectType = inferProjectTypeFromAnalysis(repoName, languages, frameworks, features);
+        description += `**${projectType}** built with ${Object.keys(languages).slice(0, 2).join(' and ')}`;
+        if (frameworks.length > 0) {
+            description += ` using ${frameworks.slice(0, 2).join(' and ')}`;
+        }
+        description += '.\n\n';
+    }
+
+    // Deep Code Analysis Results
+    description += '🔍 **Deep Code Analysis**:\n';
+    if (code.functions.length > 0) {
+        description += `• **Functions**: ${Math.min(code.functions.length, 15)} functions including ${code.functions.slice(0, 3).join(', ')}\n`;
+    }
+    if (code.classes.length > 0) {
+        description += `• **Classes**: ${code.classes.length} classes - ${code.classes.slice(0, 3).join(', ')}\n`;
+    }
+    if (code.components.length > 0) {
+        description += `• **Components**: ${code.components.slice(0, 3).join(', ')}\n`;
+    }
+    if (code.apiEndpoints.length > 0) {
+        description += `• **API Endpoints**: ${code.apiEndpoints.length} routes detected\n`;
+    }
+
+    // Project Structure
+    description += '\n🏗️ **Project Structure**:\n';
+    const structureFeatures = [];
+    if (structure.hasSrcDir) structureFeatures.push('Organized source directory');
+    if (structure.hasTestDir) structureFeatures.push('Testing suite');
+    if (structure.hasDocsDir) structureFeatures.push('Documentation');
+    if (structure.hasComponentsDir) structureFeatures.push('Component-based architecture');
+    
+    description += `• ${structureFeatures.slice(0, 4).join(', ')}\n`;
+
+    // Framework Recognition
+    if (frameworks.length > 0) {
+        description += `\n⚡ **Technologies**: ${frameworks.join(', ')}\n`;
+    }
+
+    // Feature Detection
+    if (features.length > 0) {
+        description += `\n✨ **Features**:\n`;
+        features.slice(0, 5).forEach(feature => {
+            description += `• ${feature}\n`;
+        });
+    }
+
+    // Installation & Setup Commands
+    description += '\n📋 **Quick Start**:\n';
+    description += '```bash\n';
+    description += `# Clone repository\n`;
+    description += `git clone <repository-url>\n`;
+    description += `cd ${repoName.toLowerCase().replace(/[^a-z0-9]/g, '-')}\n\n`;
+
+    // Language-specific setup
+    const primaryLang = Object.keys(languages)[0];
+    if (structure.hasPackageJson) {
+        description += '# Install dependencies\nnpm install\n\n# Start development\nnpm start\n# or npm run dev\n';
+    } else if (structure.hasRequirementsTxt) {
+        description += '# Setup Python environment\npython -m venv venv\nvenv\\Scripts\\activate\n\n# Install dependencies\npip install -r requirements.txt\n\n# Run application\npython app.py\n';
+    } else if (structure.hasPomXml) {
+        description += '# Maven build\nmvn compile\nmvn exec:java\n';
+    } else if (structure.hasBuildGradle) {
+        description += '# Gradle build\n./gradlew build\n./gradlew run\n';
+    } else {
+        description += '# Follow README for setup instructions\n';
+    }
+    
+    description += '```\n';
+
+    // Technical patterns
+    if (code.patterns.length > 0) {
+        description += `\n🔧 **Patterns**: ${code.patterns.join(', ')}\n`;
+    }
+
+    return description;
+}
+
+// Enhanced project type inference
+function inferProjectTypeFromAnalysis(repoName, languages, frameworks, features) {
+    const name = repoName.toLowerCase();
+
+    if (frameworks.includes('React') || frameworks.includes('Vue.js') || frameworks.includes('Angular')) {
+        return 'Modern Web Application';
+    }
+    if (frameworks.includes('React Native') || frameworks.includes('Flutter')) {
+        return 'Mobile Application';
+    }
+    if (frameworks.includes('Express.js') || frameworks.includes('FastAPI') || frameworks.includes('Django')) {
+        return 'Backend API Service';
+    }
+    if (features.includes('Machine Learning')) {
+        return 'AI/ML Project';
+    }
+    if (features.includes('RESTful API')) {
+        return 'API Development Project';
+    }
+
+    const primaryLang = Object.keys(languages)[0];
+    if (primaryLang === 'Python') return 'Python Application';
+    if (primaryLang === 'JavaScript' || primaryLang === 'TypeScript') return 'JavaScript Project';
+    if (primaryLang === 'Java') return 'Java Application';
+
+    return 'Software Project';
+}
+
+// Helper function to check generic descriptions
+function isGenericDescription(description) {
+    if (!description || description.length < 10) return true;
+    
+    const genericPhrases = [
+        'no description', 'add description', 'todo', 'test', 'sample'
+    ];
+    
+    const lowerDesc = description.toLowerCase();
+    return genericPhrases.some(phrase => lowerDesc.includes(phrase));
+}
+
+// Enhanced fallback description
+function generateFallbackDescription(repoName, originalDescription, languages) {
+    if (originalDescription && originalDescription.trim() && !isGenericDescription(originalDescription)) {
+        return originalDescription;
+    }
+
+    const primaryLang = Object.keys(languages)[0];
+    const languageList = Object.keys(languages).slice(0, 2).join(', ');
+    
+    let description = `**Software Project** built with ${languageList || 'multiple technologies'}.\n\n`;
+    description += `🔍 **Project**: ${repoName.replace(/-/g, ' ').replace(/_/g, ' ')}\n`;
+    description += `💻 **Language**: ${primaryLang || 'Mixed'}\n\n`;
+    
+    description += '📋 **Setup**:\n```bash\n';
+    description += `git clone <repository-url>\ncd ${repoName.toLowerCase()}\n`;
+    description += '# Follow README for specific instructions\n```';
+    
+    return description;
+}
+
+// Main GitHub profile fetcher with sequential processing
+async function fetchGitHubProfile(username) {
+    try {
+        console.log(`🚀 Starting analysis for ${username}...`);
+        
+        // Update loading status
+        updateLoadingStatus('🔍 Fetching user profile...');
+        
+        // Fetch user profile with retry
+        const userResponse = await fetchWithRetry(`https://api.github.com/users/${username}`);
+        const userData = await userResponse.json();
+
+        updateLoadingStatus('📚 Loading repositories...');
+        
+        // Fetch repositories with retry
+        const reposResponse = await fetchWithRetry(`https://api.github.com/users/${username}/repos?sort=updated&per_page=20`);
+        const reposData = await reposResponse.json();
+
+        console.log(`📊 Found ${reposData.length} repositories`);
+
+        // Process repositories one by one
+        const processedRepos = [];
+        
+        updateLoadingStatus(`🤖 Starting AI analysis (0/${reposData.length})...`);
+        
+        for (let i = 0; i < reposData.length; i++) {
+            const repo = reposData[i];
+            
+            try {
+                updateLoadingStatus(`🔍 Analyzing "${repo.name}" (${i + 1}/${reposData.length})...`);
+                
+                // Fetch languages for this repository
+                const langResponse = await fetchWithRetry(repo.languages_url);
+                const languages = langResponse.ok ? await langResponse.json() : {};
+                
+                // Generate AI description with progress callback
+                const aiDescription = await generateEnhancedDescription(
+                    repo.name, 
+                    repo.description, 
+                    languages, 
+                    repo,
+                    (progress) => updateLoadingStatus(`${progress} (${i + 1}/${reposData.length})`)
+                );
+                
+                const complexityScore = calculateComplexityScore(languages, repo);
+                
+                processedRepos.push({
+                    ...repo,
+                    languages,
+                    aiDescription,
+                    complexityScore,
+                    primaryLanguage: Object.keys(languages)[0] || 'Unknown',
+                    languageCount: Object.keys(languages).length,
+                    lastAnalyzed: new Date().toISOString()
+                });
+                
+                // Longer delay between repositories to prevent rate limiting
+                await delay(1200);
+                
+            } catch (error) {
+                console.error(`Error processing ${repo.name}:`, error);
+                
+                // Add basic info even if analysis fails
+                processedRepos.push({
+                    ...repo,
+                    languages: {},
+                    aiDescription: generateFallbackDescription(repo.name, repo.description, {}),
+                    complexityScore: 1,
+                    primaryLanguage: 'Unknown',
+                    languageCount: 0,
+                    lastAnalyzed: new Date().toISOString()
+                });
+            }
+        }
+
+        updateLoadingStatus('✅ Analysis complete!');
+        console.log('✅ All repositories analyzed successfully!');
+
+        return {
+            user: userData,
+            repositories: processedRepos,
+            analysisMetadata: {
+                totalRepos: reposData.length,
+                analyzedAt: new Date().toISOString(),
+                averageComplexity: processedRepos.reduce((acc, repo) => acc + repo.complexityScore, 0) / processedRepos.length
+            }
+        };
+    } catch (error) {
+        console.error('Profile fetch error:', error);
+        throw new Error(error.message.includes('User not found') ? 'User not found' : 'Failed to fetch profile data');
+    }
+}
+
+// Calculate project complexity score
+function calculateComplexityScore(languages, repoData) {
+    let score = 1;
+    
+    score += Object.keys(languages).length * 0.3;
+    score += Math.min(repoData.stargazers_count / 10, 2);
+    score += Math.min(repoData.forks_count / 5, 1);
+    score += Math.min(repoData.size / 1000, 2);
+    
+    const lastUpdate = new Date(repoData.updated_at);
+    const monthsOld = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24 * 30);
+    if (monthsOld < 6) score += 0.5;
+    
+    return Math.min(Math.round(score * 10) / 10, 5); // Cap at 5.0
+}
+
+// Update loading status function
+function updateLoadingStatus(message) {
+    const loadingSection = document.getElementById('loadingSection');
+    if (loadingSection && loadingSection.style.display !== 'none') {
+        const statusElement = loadingSection.querySelector('.loading-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+        }
+    }
+}
+
+// Enhanced profile display
+function displayProfile(data) {
+    const { user, repositories, analysisMetadata } = data;
+    const profileSection = document.getElementById('profileSection');
+
+    // Calculate statistics
+    const totalStars = repositories.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+    const totalForks = repositories.reduce((sum, repo) => sum + repo.forks_count, 0);
+    const languageStats = {};
+    
+    repositories.forEach(repo => {
+        Object.keys(repo.languages).forEach(lang => {
+            languageStats[lang] = (languageStats[lang] || 0) + 1;
+        });
+    });
+
+    const topLanguages = Object.entries(languageStats)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5);
+
+    const profileHTML = `
+        <div class="profile-section">
+            <div class="profile-header">
+                <img src="${user.avatar_url}" alt="${user.name || user.login}" class="profile-avatar">
+                <div class="profile-info">
+                    <h2>${user.name || user.login}</h2>
+                    <p><strong>@${user.login}</strong></p>
+                    ${user.bio ? `<p class="user-bio">${user.bio}</p>` : ''}
+                    <div class="user-details">
+                        ${user.location ? `<span class="detail-item">📍 ${user.location}</span>` : ''}
+                        ${user.company ? `<span class="detail-item">🏢 ${user.company}</span>` : ''}
+                        ${user.blog ? `<span class="detail-item">🔗 <a href="${user.blog}" target="_blank">Website</a></span>` : ''}
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-number">${repositories.length}</span>
+                            <span class="stat-label">Repositories</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">${totalStars}</span>
+                            <span class="stat-label">Total Stars</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">${user.followers}</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">${user.following}</span>
+                            <span class="stat-label">Following</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-summary">
+                <h3>🤖 AI Analysis Summary</h3>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <strong>Average Complexity:</strong> ${analysisMetadata.averageComplexity.toFixed(1)}/5.0
+                    </div>
+                    <div class="summary-item">
+                        <strong>Top Languages:</strong> ${topLanguages.map(([lang, count]) => `${lang} (${count})`).join(', ')}
+                    </div>
+                    <div class="summary-item">
+                        <strong>Total Forks:</strong> ${totalForks}
+                    </div>
+                </div>
+            </div>
+
+            <div class="repositories">
+                <div class="repo-header">
+                    <h3>📚 AI-Enhanced Repository Analysis (${repositories.length})</h3>
+                    <div class="repo-filters">
+                        <button onclick="filterRepos('all')" class="filter-btn active">All</button>
+                        <button onclick="filterRepos('high-complexity')" class="filter-btn">Complex</button>
+                        <button onclick="filterRepos('recent')" class="filter-btn">Recent</button>
+                        <button onclick="filterRepos('popular')" class="filter-btn">Popular</button>
+                    </div>
+                </div>
+                ${repositories.length > 0 ? `
+                    <div class="repo-grid">
+                        ${repositories.map(repo => `
+                            <div class="repo-card enhanced" 
+                                 data-complexity="${repo.complexityScore}" 
+                                 data-updated="${repo.updated_at}"
+                                 data-stars="${repo.stargazers_count}">
+                                <div class="repo-header-info">
+                                    <a href="${repo.html_url}" target="_blank" class="repo-name">
+                                        ${repo.name}
+                                    </a>
+                                    <div class="repo-badges">
+                                        <div class="complexity-badge" title="Complexity: ${repo.complexityScore}/5.0">
+                                            ${getComplexityBadge(repo.complexityScore)}
+                                        </div>
+                                        ${repo.stargazers_count > 0 ? `<div class="star-badge">⭐ ${repo.stargazers_count}</div>` : ''}
+                                    </div>
+                                </div>
+                                <div class="repo-ai-description">
+                                    ${formatAIDescription(repo.aiDescription)}
+                                </div>
+                                <div class="repo-meta-enhanced">
+                                    <div class="language-info">
+                                        ${Object.keys(repo.languages).length > 0 ? `
+                                            <div class="primary-language">
+                                                <div class="language-color" style="background-color: ${languageColors[repo.primaryLanguage] || '#666'}"></div>
+                                                <span>${repo.primaryLanguage}</span>
+                                                ${repo.languageCount > 1 ? `<span class="lang-count">+${repo.languageCount - 1}</span>` : ''}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    <div class="repo-stats">
+                                        <div class="repo-stat" title="Forks">
+                                            <span>🍴</span>
+                                            <span>${repo.forks_count}</span>
+                                        </div>
+                                        <div class="repo-stat" title="Size">
+                                            <span>📁</span>
+                                            <span>${formatSize(repo.size)}</span>
+                                        </div>
+                                        <div class="repo-stat" title="Last Updated">
+                                            <span>🕒</span>
+                                            <span>${formatDate(repo.updated_at)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <div class="no-repos">
+                        <p>No public repositories found.</p>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+
+    profileSection.innerHTML = profileHTML;
+    profileSection.style.display = 'block';
+}
+
+// Helper functions for display
+function getComplexityBadge(score) {
+    if (score >= 4) return '🔴 Complex';
+    if (score >= 3) return '🟡 Moderate';
+    if (score >= 2) return '🟢 Simple';
+    return '⚪ Basic';
+}
+
+function formatAIDescription(description) {
+    return description
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+        .replace(/\n/g, '<br>');
+}
+
+function formatSize(sizeKB) {
+    if (sizeKB > 1024) return `${(sizeKB / 1024).toFixed(1)}MB`;
+    return `${sizeKB}KB`;
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString();
+}
+
+// Enhanced repository filtering
+function filterRepos(filterType) {
+    const cards = document.querySelectorAll('.repo-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    // Update active button
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    cards.forEach(card => {
+        let show = false;
+        
+        switch(filterType) {
+            case 'all':
+                show = true;
+                break;
+            case 'high-complexity':
+                const complexity = parseFloat(card.dataset.complexity);
+                show = complexity >= 3;
+                break;
+            case 'recent':
+                const updated = new Date(card.dataset.updated);
+                const sixMonthsAgo = new Date();
+                sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                show = updated > sixMonthsAgo;
+                break;
+            case 'popular':
+                const stars = parseInt(card.dataset.stars);
+                show = stars > 0;
+                break;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+}
+
+// Enhanced error handling
+function showError(message) {
+    const errorSection = document.getElementById('errorSection');
+    errorSection.innerHTML = `
+        <div class="error">
+            <h3>❌ Analysis Error</h3>
+            <p>${message}</p>
+            <div class="error-suggestions">
+                <h4>Possible solutions:</h4>
+                <ul>
+                    <li>Check if the username is correct</li>
+                    <li>Try again in a few minutes (GitHub API rate limit)</li>
+                    <li>Make sure the user has public repositories</li>
+                    <li>Check your internet connection</li>
+                </ul>
+            </div>
+        </div>
+    `;
+    errorSection.style.display = 'block';
+}
+
+function hideAllSections() {
+    document.getElementById('loadingSection').style.display = 'none';
+    document.getElementById('errorSection').style.display = 'none';
+    document.getElementById('profileSection').style.display = 'none';
+}
+
+// Enhanced loading display with sequential status
+function showLoading(message = 'Starting analysis...') {
+    const loadingSection = document.getElementById('loadingSection');
+    loadingSection.innerHTML = `
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <h3>🤖 AI-Powered Repository Analysis</h3>
+            <p class="loading-status">${message}</p>
+            <div class="loading-info">
+                <p><strong>Sequential Processing:</strong> Each repository is analyzed individually to provide detailed insights</p>
+                <p><strong>Rate Limit Safe:</strong> Built-in delays prevent API throttling</p>
+                <p><strong>Deep Analysis:</strong> Code structure, patterns, and frameworks detection</p>
+            </div>
+            <div class="loading-steps">
+                <div class="step">🔍 Fetching profile data</div>
+                <div class="step">📚 Loading repositories</div>
+                <div class="step">🤖 AI analysis in progress</div>
+                <div class="step">📝 Generating descriptions</div>
+                <div class="step">✅ Finalizing results</div>
+            </div>
+        </div>
+    `;
+    loadingSection.style.display = 'block';
+}
+
+// Main form handler with enhanced error handling
+document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('usernameInput').value.trim();
+    if (!username) {
+        showError('Please enter a GitHub username');
+        return;
+    }
+
+    const searchBtn = document.getElementById('searchBtn');
+    const originalText = searchBtn.textContent;
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Analyzing...';
+
+    hideAllSections();
+    showLoading('🚀 Initializing AI analysis...');
+
+    try {
+        const data = await fetchGitHubProfile(username);
+        hideAllSections();
+        displayProfile(data);
+    } catch (error) {
+        hideAllSections();
+        
+        let errorMessage = 'An unexpected error occurred';
+        if (error.message.includes('User not found')) {
+            errorMessage = `GitHub user "${username}" not found`;
+        } else if (error.message.includes('rate limit') || error.message.includes('403')) {
+            errorMessage = 'GitHub API rate limit reached. Please try again in a few minutes.';
+        } else if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error. Please check your internet connection.';
+        } else {
+            errorMessage = error.message;
+        }
+        
+        showError(errorMessage);
+    } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = originalText;
+    }
+});
+
+// Enhanced enter key support
+document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+    }
+});
+
+// Add search suggestions
+document.getElementById('usernameInput').addEventListener('input', (e) => {
+    const input = e.target;
+    const value = input.value.trim();
+    
+    // Remove any existing validation classes
+    input.classList.remove('valid', 'invalid');
+    
+    if (value.length > 0) {
+        // Basic validation for GitHub usernames
+        const isValid = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(value) && value.length <= 39;
+        input.classList.add(isValid ? 'valid' : 'invalid');
+    }
+});
+
+// Progress tracking for better UX
+let analysisProgress = {
+    current: 0,
+    total: 0,
+    currentRepo: ''
+};
+
+function updateProgressBar() {
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar && analysisProgress.total > 0) {
+        const percentage = (analysisProgress.current / analysisProgress.total) * 100;
+        progressBar.style.width = `${percentage}%`;
+    }
+}
+
+// Add to global scope for filtering
+window.filterRepos = filterRepos;
+
+// Initialize tooltips and UI enhancements
+document.addEventListener('DOMContentLoaded', () => {
+    // Add any initialization code here
+    console.log('🤖 GitHub AI Analyzer initialized successfully!');
+    
+    // Add sample usernames for demo
+    const input = document.getElementById('usernameInput');
+    input.placeholder = 'e.g., octocat, torvalds, gaearon';
+});
+    </script>    
+</body>
+</html>

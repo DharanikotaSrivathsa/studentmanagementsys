@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+    
+<style>
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: bold;
+        }
+        .sidebar {
+            background-color: #4e73df;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        .sidebar .fas {
+            margin-right: 10px;
+        }
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #6c757d;
+        }
+        .stats-card {
+            border-left: 4px solid;
+        }
+        .stats-card.primary {
+            border-left-color: #4e73df;
+        }
+        .stats-card.success {
+            border-left-color: #1cc88a;
+        }
+        .stats-card.info {
+            border-left-color: #36b9cc;
+        }
+        .stats-card.warning {
+            border-left-color: #f6c23e;
+        }
+        
+    </style>
+
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --secondary-color: #8b5cf6;
+    --background: #ffffff;
+    --surface: #f8fafc;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+}
+
+[data-theme="dark"] {
+    --background: #0f172a;
+    --surface: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border: #334155;
+    --shadow: rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    background: var(--gradient);
+    padding: 2rem 1rem;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 6px var(--shadow);
+}
+
+.header h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header h1 i {
+    margin-right: 0.5rem;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 2rem 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-container {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px var(--shadow);
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    font-size: 1.8rem;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-group i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-secondary);
+    z-index: 2;
+    font-size: 1.1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid var(--border);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    background: var(--background);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.track-btn {
+    background: var(--gradient);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.track-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+.track-btn:active {
+    transform: translateY(0);
+}
+
+/* Loader */
+.loader {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.loader.show {
+    display: block;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--border);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Results */
+.results-container {
+    display: none;
+    opacity: 0;
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.results-container.show {
+    display: block;
+}
+
+.results-container h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    font-size: 1.8rem;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.result-card {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 8px 25px var(--shadow);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: slideInUp 0.5s ease forwards;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px var(--shadow);
+}
+
+.result-card.linkedin {
+    border-left: 4px solid #0077b5;
+}
+
+.result-card.leetcode {
+    border-left: 4px solid #ffa116;
+}
+
+.result-card.hackerrank {
+    border-left: 4px solid #00ea64;
+}
+
+.result-card.geeksforgeeks {
+    border-left: 4px solid #0f9d58;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-header i {
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+.linkedin .card-header i {
+    color: #0077b5;
+}
+
+.leetcode .card-header i {
+    color: #ffa116;
+}
+
+.hackerrank .card-header i {
+    color: #00ea64;
+}
+
+.geeksforgeeks .card-header i {
+    color: #0f9d58;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-content {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--background);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.profile-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: var(--error);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+/* Footer */
+.footer {
+    background: var(--surface);
+    padding: 2rem;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--primary-dark);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .form-container {
+        padding: 1.5rem;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .toast {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        transform: translateY(-100%);
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .form-container h2 {
+        font-size: 1.5rem;
+    }
+    
+    .results-container h3 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar px-0">
+                <div class="text-center py-4">
+                    <h4 class="text-white">College ERP</h4>
+                </div>
+                <hr class="sidebar-divider my-0 bg-light">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard">
+                            <i class="fas fa-fw fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="students" id="studentsLink">
+                            <i class="fas fa-fw fa-users"></i>
+                            Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="attendance">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marks">
+                            <i class="fas fa-fw fa-chart-bar"></i>
+                            Marks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="github">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            Github
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profiletracker">
+                            <i class="fas fa-fw fa-calendar-check"></i>
+                            ProfileTracker
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/studentmanagement">
+                            <i class="fas fa-fw fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        
+
+
+
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+        
+            <h1><i class="fas fa-chart-line"></i>Profile Tracker</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <!-- Main Form -->
+        <main class="main-content">
+            <div class="form-container">
+                <h2>Track Your Coding Profiles</h2>
+                <form id="profileForm" class="profile-form">
+                    <div class="input-group">
+                        <i class="fab fa-linkedin"></i>
+                        <input 
+                            type="url" 
+                            id="linkedinUrl" 
+                            placeholder="LinkedIn Profile URL (e.g., https://linkedin.com/in/username)"
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-code"></i>
+                        <input 
+                            type="text" 
+                            id="leetcodeUsername" 
+                            placeholder="LeetCode Username"
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fab fa-hackerrank"></i>
+                        <input 
+                            type="text" 
+                            id="hackerrankUsername" 
+                            placeholder="HackerRank Username"
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-laptop-code"></i>
+                        <input 
+                            type="text" 
+                            id="geeksforgeeksUsername" 
+                            placeholder="GeeksforGeeks Username"
+                            class="form-input"
+                        >
+                    </div>
+
+                    <button type="submit" class="track-btn" id="trackBtn">
+                        <i class="fas fa-search"></i>
+                        Track Profiles
+                    </button>
+                </form>
+            </div>
+
+            <!-- Loader -->
+            <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <p>Fetching profile data...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-container" id="resultsContainer">
+                <h3>Profile Results</h3>
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            
+        </main>
+</div>
+</div>
+        <!-- Toast Notification -->
+        
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                Developed by 
+                <a href="https://github.com/shivakumar12012004" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i>BABALASARE SHIVAKUMAR
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        class ProfileTracker {
+    constructor() {
+        this.initializeElements();
+        this.bindEvents();
+        this.initializeTheme();
+    }
+
+    initializeElements() {
+        this.form = document.getElementById('profileForm');
+        this.trackBtn = document.getElementById('trackBtn');
+        this.loader = document.getElementById('loader');
+        this.resultsContainer = document.getElementById('resultsContainer');
+        this.resultsGrid = document.getElementById('resultsGrid');
+        this.toast = document.getElementById('toast');
+        this.toastMessage = document.getElementById('toastMessage');
+        this.themeToggle = document.getElementById('themeToggle');
+
+        this.inputs = {
+            linkedin: document.getElementById('linkedinUrl'),
+            leetcode: document.getElementById('leetcodeUsername'),
+            hackerrank: document.getElementById('hackerrankUsername'),
+            geeksforgeeks: document.getElementById('geeksforgeeksUsername')
+        };
+    }
+
+    bindEvents() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+    }
+
+    initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        this.updateThemeIcon(savedTheme);
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        this.updateThemeIcon(newTheme);
+    }
+
+    updateThemeIcon(theme) {
+        const icon = this.themeToggle.querySelector('i');
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        const formData = this.getFormData();
+        
+        if (!this.validateInputs(formData)) {
+            return;
+        }
+
+        this.showLoader();
+        this.hideResults();
+
+        try {
+            const results = await this.fetchAllProfiles(formData);
+            this.displayResults(results);
+        } catch (error) {
+            console.error('Error fetching profiles:', error);
+            this.showToast('Error fetching profile data. Please try again.');
+        } finally {
+            this.hideLoader();
+        }
+    }
+
+    getFormData() {
+        return {
+            linkedin: this.inputs.linkedin.value.trim(),
+            leetcode: this.inputs.leetcode.value.trim(),
+            hackerrank: this.inputs.hackerrank.value.trim(),
+            geeksforgeeks: this.inputs.geeksforgeeks.value.trim()
+        };
+    }
+
+    validateInputs(formData) {
+        const hasAnyInput = Object.values(formData).some(value => value !== '');
+        
+        if (!hasAnyInput) {
+            this.showToast('Please enter at least one username or profile URL.');
+            return false;
+        }
+
+        // Validate LinkedIn URL format if provided
+        if (formData.linkedin && !this.isValidLinkedInURL(formData.linkedin)) {
+            this.showToast('Please enter a valid LinkedIn profile URL.');
+            return false;
+        }
+
+        return true;
+    }
+
+    isValidLinkedInURL(url) {
+        const linkedinPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+\/?$/;
+        return linkedinPattern.test(url);
+    }
+
+    async fetchAllProfiles(formData) {
+        const results = [];
+
+        // LinkedIn Profile with posts
+        if (formData.linkedin) {
+            try {
+                const linkedinPosts = await this.fetchLinkedInPosts(formData.linkedin);
+                results.push({
+                    platform: 'linkedin',
+                    data: { url: formData.linkedin, posts: linkedinPosts },
+                    success: true
+                });
+            } catch (error) {
+                results.push({
+                    platform: 'linkedin',
+                    data: { url: formData.linkedin },
+                    success: false,
+                    error: 'Failed to fetch LinkedIn posts'
+                });
+            }
+        }
+
+        // LeetCode Profile
+        if (formData.leetcode) {
+            try {
+                const leetcodeData = await this.fetchLeetCodeStats(formData.leetcode);
+                results.push({
+                    platform: 'leetcode',
+                    data: leetcodeData,
+                    success: true
+                });
+            } catch (error) {
+                results.push({
+                    platform: 'leetcode',
+                    data: { username: formData.leetcode },
+                    success: false,
+                    error: 'Failed to fetch LeetCode stats'
+                });
+            }
+        }
+
+        // HackerRank Profile
+        if (formData.hackerrank) {
+            results.push({
+                platform: 'hackerrank',
+                data: { 
+                    username: formData.hackerrank,
+                    url: `https://www.hackerrank.com/${formData.hackerrank}`
+                },
+                success: true
+            });
+        }
+
+        // GeeksforGeeks Profile
+        if (formData.geeksforgeeks) {
+            results.push({
+                platform: 'geeksforgeeks',
+                data: { 
+                    username: formData.geeksforgeeks,
+                    url: `https://auth.geeksforgeeks.org/user/${formData.geeksforgeeks}`
+                },
+                success: true
+            });
+        }
+
+        return results;
+    }
+
+    async fetchLinkedInPosts(url) {
+        // Extract profile username from the URL
+        const match = url.match(/linkedin\.com\/in\/([\w-]+)/);
+        if (!match) {
+            throw new Error('Invalid LinkedIn URL');
+        }
+        const profileUsername = match[1];
+
+        // Simulate an API call to retrieve recent posts for the profile
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([
+                    { id: 1, content: 'Had a great meeting with the team today!', date: '2025-06-01' },
+                    { id: 2, content: 'Excited to announce our new product launch.', date: '2025-05-28' },
+                    { id: 3, content: 'Sharing insights on modern web development.', date: '2025-05-20' }
+                ]);
+            }, 1000);
+        });
+    }
+
+    async fetchLeetCodeStats(username) {
+        const response = await fetch(`https://leetcode-stats-api.herokuapp.com/${username}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch LeetCode stats');
+        }
+
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+            throw new Error(data.message || 'User not found');
+        }
+
+        return {
+            username,
+            ...data
+        };
+    }
+
+    displayResults(results) {
+        this.resultsGrid.innerHTML = '';
+
+        results.forEach((result, index) => {
+            const card = this.createResultCard(result);
+            card.style.animationDelay = `${index * 0.1}s`;
+            this.resultsGrid.appendChild(card);
+        });
+
+        this.showResults();
+    }
+
+    createResultCard(result) {
+        const card = document.createElement('div');
+        card.className = `result-card ${result.platform}`;
+
+        switch (result.platform) {
+            case 'linkedin':
+                card.innerHTML = this.createLinkedInCard(result.data);
+                break;
+            case 'leetcode':
+                card.innerHTML = this.createLeetCodeCard(result);
+                break;
+            case 'hackerrank':
+                card.innerHTML = this.createHackerRankCard(result.data);
+                break;
+            case 'geeksforgeeks':
+                card.innerHTML = this.createGeeksforGeeksCard(result.data);
+                break;
+        }
+
+        return card;
+    }
+
+    createLinkedInCard(data) {
+        let postsSection = '';
+        if (data.posts && data.posts.length > 0) {
+            postsSection = `
+                <div class="linkedin-posts">
+                    <h4>Recent Posts</h4>
+                    <ul>
+                        ${data.posts.map(post => `<li><strong>${post.date}:</strong> ${post.content}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        return `
+            <div class="card-header">
+                <i class="fab fa-linkedin"></i>
+                <div class="card-title">LinkedIn Profile</div>
+            </div>
+            <div class="card-content">
+                <p>Professional networking profile</p>
+                <a href="${data.url}" target="_blank" rel="noopener noreferrer" class="profile-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    View LinkedIn Profile
+                </a>
+                ${postsSection}
+            </div>
+        `;
+    }
+
+    createLeetCodeCard(result) {
+        if (!result.success) {
+            return `
+                <div class="card-header">
+                    <i class="fas fa-code"></i>
+                    <div class="card-title">LeetCode</div>
+                </div>
+                <div class="card-content">
+                    <p style="color: var(--error);">${result.error}</p>
+                    <a href="https://leetcode.com/${result.data.username}" target="_blank" rel="noopener noreferrer" class="profile-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        View Profile
+                    </a>
+                </div>
+            `;
+        }
+
+        const data = result.data;
+        return `
+            <div class="card-header">
+                <i class="fas fa-code"></i>
+                <div class="card-title">LeetCode - ${data.username}</div>
+            </div>
+            <div class="card-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${data.totalSolved || 0}</div>
+                        <div class="stat-label">Total Solved</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.ranking || 'N/A'}</div>
+                        <div class="stat-label">Ranking</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.acceptanceRate ? Math.round(data.acceptanceRate) + '%' : 'N/A'}</div>
+                        <div class="stat-label">Acceptance</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.contributionPoints || 0}</div>
+                        <div class="stat-label">Points</div>
+                    </div>
+                </div>
+                <a href="https://leetcode.com/${data.username}" target="_blank" rel="noopener noreferrer" class="profile-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    View LeetCode Profile
+                </a>
+            </div>
+        `;
+    }
+
+    createHackerRankCard(data) {
+        return `
+            <div class="card-header">
+                <i class="fab fa-hackerrank"></i>
+                <div class="card-title">HackerRank - ${data.username}</div>
+            </div>
+            <div class="card-content">
+                <p>Coding challenges and competitions platform</p>
+                <a href="${data.url}" target="_blank" rel="noopener noreferrer" class="profile-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    View HackerRank Profile
+                </a>
+            </div>
+        `;
+    }
+
+    createGeeksforGeeksCard(data) {
+        return `
+            <div class="card-header">
+                <i class="fas fa-laptop-code"></i>
+                <div class="card-title">GeeksforGeeks - ${data.username}</div>
+            </div>
+            <div class="card-content">
+                <p>Programming articles and practice problems</p>
+                <a href="${data.url}" target="_blank" rel="noopener noreferrer" class="profile-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    View GeeksforGeeks Profile
+                </a>
+            </div>
+        `;
+    }
+
+    showLoader() {
+        this.loader.classList.add('show');
+        this.trackBtn.disabled = true;
+        this.trackBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    }
+
+    hideLoader() {
+        this.loader.classList.remove('show');
+        this.trackBtn.disabled = false;
+        this.trackBtn.innerHTML = '<i class="fas fa-search"></i> Track Profiles';
+    }
+
+    showResults() {
+        this.resultsContainer.classList.add('show');
+    }
+
+    hideResults() {
+        this.resultsContainer.classList.remove('show');
+    }
+
+    showToast(message) {
+        this.toastMessage.textContent = message;
+        this.toast.classList.add('show');
+        
+        setTimeout(() => {
+            this.toast.classList.remove('show');
+        }, 4000);
+    }
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    new ProfileTracker();
+});
+
+    </script>
+</body>
+</html>
